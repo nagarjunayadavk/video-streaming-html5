@@ -1,12 +1,18 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-	<title> Node JS Fast CSV Example</title>
-	<meta author="Nagarjuna Yadav K, nagarjunayadavk@gmail.com">
-	<meta charset="utf-8">
-	<style type="text/css">
-		body {
-            width: 1024px;
+    <title> Node JS & Html5 Example</title>
+    <meta author="Nagarjuna Yadav K, nagarjunayadavk@gmail.com">
+    <meta charset="utf-8">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
+        integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    </link>
+    <style type="text/css">
+        body {
+            /* width: 1024px; */
             margin: 0 auto;
 
         }
@@ -18,18 +24,144 @@
             max-width: 960px;
             overflow-x: auto;
         }
-	</style>
-</head>
-<body>
- <header>
- 	<h1>Node JS  with HTML 5 Video Example</h1>
- </header>
-  
- <video id="videoPlayer" controls width="500">
-    <source src="http://localhost:900/video" type="video/mp4">
-  </video>
 
-  <footer>
+        .custom-range::-webkit-slider-thumb {
+            background: #17a2b8;
+        }
+
+        .custom-range::-moz-range-thumb {
+            background: #17a2b8;
+        }
+
+        .custom-range::-ms-thumb {
+            background: #17a2b8;
+        }
+    </style>
+    <script type="text/javascript">
+        window.onload = function () {
+            // Video
+            var video = document.getElementById("video");
+
+            // Buttons
+            var playButton = document.getElementById("play-pause");
+            var muteButton = document.getElementById("mute");
+            var fullScreenButton = document.getElementById("full-screen");
+            var replayButton = document.getElementById("replayVideo");
+
+            // Sliders- HHTMl5 range
+            var seekBar = document.getElementById("seek-bar");
+            var volumeBar = document.getElementById("volume-bar");
+            // For Play Button
+            playButton.addEventListener("click", function () {
+                if (video.paused == true) {
+                    video.play();
+                    // Update the button classes
+                    playButton.classList.remove("fa-play");
+                    playButton.classList.add("fa-pause");
+                } else {
+                    video.pause();
+                    // Update the button classes
+                    playButton.classList.add("fa-play");
+                    playButton.classList.remove("fa-pause");
+                }
+            });
+            // For Mute Button
+            muteButton.addEventListener("click", function () {
+                if (video.muted == false) {
+                    video.muted = true;
+                    // Update the button classes
+                    muteButton.classList.add("fa-volume-off");
+                    muteButton.classList.remove("fa-volume-up");
+
+                } else {
+                    video.muted = false;
+                    // Update the button classes
+                    muteButton.classList.add("fa-volume-up");
+                    muteButton.classList.remove("fa-volume-off");
+                }
+            });
+
+            // For full-screen button
+            fullScreenButton.addEventListener("click", function () {
+                if (video.requestFullscreen) {
+                    video.requestFullscreen();
+                } else if (video.mozRequestFullScreen) {
+                    video.mozRequestFullScreen(); // For Firefox
+                } else if (video.webkitRequestFullscreen) {
+                    video.webkitRequestFullscreen(); // For Chrome and Safari
+                }
+            });
+
+            // For Play Time Bar change
+            seekBar.addEventListener("change", function (e) {
+                console.log("change")
+                // Calculate the new time
+                var time = video.duration * (seekBar.value / 100);
+                video.currentTime = time;
+                e.preventDefault();
+            });
+
+            // For Play Time Bar click -handle is being dragged
+            seekBar.addEventListener("click", function (e) {
+                console.log("click")
+                var percent = e.offsetX / this.offsetWidth;
+                video.currentTime = percent * video.duration;
+                e.target.value = Math.floor(percent / 100);
+                e.preventDefault();
+            });
+
+
+            // To Update the Play Time Bar as the video plays
+            video.addEventListener("timeupdate", function () {
+                // Calculate the slider value
+                var value = (100 / video.duration) * video.currentTime;
+
+                // Update the slider value
+                seekBar.value = value;
+            });
+
+            // For volume bar Update
+            volumeBar.addEventListener("change", function () {
+                video.volume = volumeBar.value;
+            });
+            // Replay Button
+            replayButton.addEventListener("click", function () {
+                video.currentTime = 0;
+                video.play();
+            });
+        }
+
+    </script>
+</head>
+
+<body class="container">
+    <header>
+        <h1>Node JS with HTML 5 Video Example</h1>
+    </header>
+
+    <!-- <video id="videoPlayer" controls width="500">
+    <source src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4" type="video/mp4">
+  </video> -->
+
+    <div id="video-container" class="container">
+        <!-- Video -->
+        <div class="row">
+            <video id="video" style="margin: 0 auto;" width="500">
+                <!-- <source src="http://localhost:900/video" type="video/mp4"> -->
+                <source src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4" type="video/mp4">
+            </video>
+        </div>
+        <!-- Video Controls -->
+        <div id="video-controls" class="row">
+            <button type="button" id="replayVideo" class="btn btn-outline-info fa fa-repeat"></button>
+            <button type="button" id="play-pause" class="btn btn-outline-info fa fa-play"></button>
+            <input type="range" id="seek-bar" class="custom-range seek" value="0" min="0" step="1">
+            <button type="button" id="mute" class="btn btn-outline-info fa fa-volume-up"></button>
+            <input type="range" id="volume-bar" class="custom-range" min="0" max="1" step="0.1" value="1">
+            <button type="button" id="full-screen" class="btn btn-outline-info fa fa-window-maximize"></button>
+        </div>
+    </div>
+    <footer>
         <h2>LICENSE</h2>
         <pre>
             <code >Copyright (c) 2020, Nagarjuna Yadav K(nagarjunayadavk@gamil.com)
@@ -44,4 +176,5 @@
 
     </footer>
 </body>
+
 </html>
