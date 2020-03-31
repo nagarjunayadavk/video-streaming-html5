@@ -12,9 +12,8 @@
     </link>
     <style type="text/css">
         body {
-            /* width: 1024px; */
+            width: 1280px;
             margin: 0 auto;
-
         }
 
         footer pre {
@@ -37,8 +36,149 @@
             background: #17a2b8;
         }
 
+        .btn-outline-info {
+            color: #f8f9fa;
+            border: 0px;
+            /* border-color: #e9ecef; */
+        }
+
         .time-diaplay {
             float: left;
+            color: #e9ecef;
+            text-align: center;
+        }
+
+        #video-container {
+            width: 1280px;
+            background: #212529;
+        }
+
+        #video-controls {
+            z-index: 2;
+            bottom: 20px;
+            width: 100%;
+            height: 60px;
+            opacity: 1;
+            transition: all 550ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
+            margin: 0px;
+        }
+
+        .flex {
+            display: -webkit-flex;
+            display: -moz-flex;
+            display: -ms-flex;
+            display: -o-flex;
+            display: flex;
+        }
+
+        .justify-center {
+            justify-content: center;
+        }
+
+        .align-center {
+            -ms-align-items: center;
+            align-items: center;
+        }
+
+        .video-progress {
+            position: relative;
+            height: 8.4px;
+            margin-bottom: 10px;
+            padding-left: 0px;
+        }
+
+
+
+        progress {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            border-radius: 2px;
+            width: 100%;
+            height: 8.4px;
+            pointer-events: none;
+            position: absolute;
+            top: 0;
+        }
+
+        progress::-webkit-progress-bar {
+            background-color: #474545;
+            border-radius: 2px;
+        }
+
+        progress::-webkit-progress-value {
+            background: #007bff;
+            border-radius: 2px;
+        }
+
+        progress::-moz-progress-bar {
+            border: 1px solid #007bff;
+            background: #007bff;
+        }
+
+        #seek-bar {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            cursor: pointer;
+            margin: 0;
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            cursor: pointer;
+            border-radius: 1.3px;
+            -webkit-appearance: none;
+            transition: all 0.4s ease;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            height: 16px;
+            width: 16px;
+            border-radius: 2px;
+            background: navajowhite;
+            transform: rotate(45deg);
+            cursor: pointer;
+            -webkit-appearance: none;
+            margin-left: -1px;
+        }
+
+        input[type=range]:focus::-webkit-slider-runnable-track {
+            background: transparent;
+        }
+
+        input[type=range]::-moz-range-track {
+            width: 100%;
+            height: 8.4px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            background: transparent;
+            border-radius: 1.3px;
+        }
+
+        input[type=range]::-moz-range-thumb {
+            height: 14px;
+            width: 14px;
+            border-radius: 50px;
+            border: 1px solid rgb(146, 220, 233);
+            background: rgb(146, 220, 233);
+            cursor: pointer;
+            margin-top: 5px;
+        }
+
+        input[type=range]:focus::-moz-range-track {
+            outline: none;
+        }
+
+        input[type=range] {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            height: 8.4px;
+            background: transparent;
+            cursor: pointer;
+        }
+        #video-html5{
+            margin: 0px ;
         }
     </style>
     <script type="text/javascript">
@@ -48,17 +188,26 @@
 
             // Buttons
             var playButton = document.getElementById("play-pause");
-            var muteButton = document.getElementById("mute");
-            var fullScreenButton = document.getElementById("full-screen");
-            var replayButton = document.getElementById("replayVideo");
+            // var muteButton = document.getElementById("mute");
+            // var fullScreenButton = document.getElementById("full-screen");
+            // var replayButton = document.getElementById("replayVideo");
             var currentTime = document.getElementById("current-time");
             var elapsedTime = document.getElementById("elapsed-time");
 
             // Sliders- HHTMl5 range
             var seekBar = document.getElementById("seek-bar");
-            var volumeBar = document.getElementById("volume-bar");
+            var progressBar = document.getElementById('progress-bar');
+            // var volumeBar = document.getElementById("volume-bar");
+            var playBackwardButton = document.getElementById("play-backward");
+            var playForwardButton = document.getElementById("play-forward");
+
+
+
             // For Play Button
             playButton.addEventListener("click", function () {
+                const videoDuration = Math.round(video.duration);
+                seekBar.setAttribute('max', videoDuration - 1);
+                progressBar.setAttribute('max', videoDuration - 1);
                 if (video.paused == true) {
                     video.play();
                     // Update the button classes
@@ -71,32 +220,32 @@
                     playButton.classList.remove("fa-pause");
                 }
             });
-            // For Mute Button
-            muteButton.addEventListener("click", function () {
-                if (video.muted == false) {
-                    video.muted = true;
-                    // Update the button classes
-                    muteButton.classList.add("fa-volume-off");
-                    muteButton.classList.remove("fa-volume-up");
+            // // For Mute Button
+            // muteButton.addEventListener("click", function () {
+            //     if (video.muted == false) {
+            //         video.muted = true;
+            //         // Update the button classes
+            //         muteButton.classList.add("fa-volume-off");
+            //         muteButton.classList.remove("fa-volume-up");
 
-                } else {
-                    video.muted = false;
-                    // Update the button classes
-                    muteButton.classList.add("fa-volume-up");
-                    muteButton.classList.remove("fa-volume-off");
-                }
-            });
+            //     } else {
+            //         video.muted = false;
+            //         // Update the button classes
+            //         muteButton.classList.add("fa-volume-up");
+            //         muteButton.classList.remove("fa-volume-off");
+            //     }
+            // });
 
-            // For full-screen button
-            fullScreenButton.addEventListener("click", function () {
-                if (video.requestFullscreen) {
-                    video.requestFullscreen();
-                } else if (video.mozRequestFullScreen) {
-                    video.mozRequestFullScreen(); // For Firefox
-                } else if (video.webkitRequestFullscreen) {
-                    video.webkitRequestFullscreen(); // For Chrome and Safari
-                }
-            });
+            // // For full-screen button
+            // fullScreenButton.addEventListener("click", function () {
+            //     if (video.requestFullscreen) {
+            //         video.requestFullscreen();
+            //     } else if (video.mozRequestFullScreen) {
+            //         video.mozRequestFullScreen(); // For Firefox
+            //     } else if (video.webkitRequestFullscreen) {
+            //         video.webkitRequestFullscreen(); // For Chrome and Safari
+            //     }
+            // });
 
             // For Play Time Bar change
             seekBar.addEventListener("change", function (e) {
@@ -122,33 +271,46 @@
                 // Calculate the slider value
                 let value = (100 / video.duration) * video.currentTime;
                 // Update the slider value
-                seekBar.value = value;
+                // seekBar.value = value;
                 let currentMins = Math.floor(video.currentTime / 60);
                 let currentSecs = Math.floor(video.currentTime - currentMins * 60);
                 let elapsedMins = Math.floor(video.duration / 60);
                 let elapsedSecs = Math.floor(video.duration - elapsedMins * 60);
                 currentTime.innerHTML = currentMins + ":" + currentSecs;
                 elapsedTime.innerHTML = elapsedMins + ":" + elapsedSecs;
-            });
 
-            // For volume bar Update
-            volumeBar.addEventListener("change", function () {
-                video.volume = volumeBar.value;
+                seekBar.value = Math.floor(video.currentTime);
+                progressBar.value = Math.floor(video.currentTime);
+
+                if ( (currentMins + ":" + currentSecs) ==  (elapsedMins + ":" + elapsedSecs)) {
+                    playButton.classList.add("fa-play");
+                    playButton.classList.remove("fa-pause");
+                }
             });
+            playBackwardButton.addEventListener("click", function () {
+                video.currentTime = video.currentTime - 10;
+            });
+            playForwardButton.addEventListener("click", function () {
+                video.currentTime += 10;
+            });
+            // // For volume bar Update
+            // volumeBar.addEventListener("change", function () {
+            //     video.volume = volumeBar.value;
+            // });
             // Replay Button
-            replayButton.addEventListener("click", function () {
-                video.currentTime = 0;
-                video.play();
-                // Update the button classes
-                playButton.classList.remove("fa-play");
-                playButton.classList.add("fa-pause");
-            });
+            // replayButton.addEventListener("click", function () {
+            //     video.currentTime = 0;
+            //     video.play();
+            //     // Update the button classes
+            //     playButton.classList.remove("fa-play");
+            //     playButton.classList.add("fa-pause");
+            // });
         }
 
     </script>
 </head>
 
-<body class="container">
+<body>
     <header>
         <h1>Node JS with HTML 5 Video Example</h1>
     </header>
@@ -157,16 +319,36 @@
     <source src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4" type="video/mp4">
   </video> -->
 
-    <div id="video-container" class="container">
+    <div id="video-container">
         <!-- Video -->
-        <div class="row">
-            <video id="video" style="margin: 0 auto;" width="500">
+        <div class="row" id="video-html5">
+            <video id="video" width="1280" height="720" preload="metadata">
                 <!-- <source src="http://localhost:900/video" type="video/mp4"> -->
-                <source src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4" type="video/mp4">
+                <source src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
+                type="video/mp4">
             </video>
         </div>
         <!-- Video Controls -->
-        <div id="video-controls" class="row p-3">
+        <div id="video-controls" class="row m-2">
+            <div class="container">
+                <div class="row flex align-center justify-center">
+                    <span id="current-time" class="time-diaplay col-1"></span>
+                    <div class="video-progress col-10">
+                        <progress id="progress-bar" value="0" min="0"></progress>
+                        <input class="seek" id="seek-bar" value="0" min="0" type="range" step="1">
+                    </div>
+                    <!-- <input type="range" id="seek-bar" class="custom-range seek col-10" value="0" min="0" step="1"> -->
+                    <span id="elapsed-time" class="time-diaplay col-1"></span>
+                </div>
+                <div class="row flex align-center justify-center">
+                    <button type="button" id="play-backward" class="btn btn-outline-info fa fa-backward"></button>
+                    <button type="button" id="play-pause" class="btn btn-outline-info fa fa-play mr-1 ml-1"></button>
+                    <button type="button" id="play-forward" class="btn btn-outline-info fa fa-forward"></button>
+                </div>
+            </div>
+        </div>
+        <!-- Video Controls -->
+        <!-- <div id="video-controls" class="row p-3">
             <div class="col-2 row">
                 <button type="button" id="replayVideo" class="btn btn-outline-info fa fa-repeat"></button>
                 <button type="button" id="play-pause" class="btn btn-outline-info fa fa-play"></button>
@@ -179,9 +361,10 @@
             <div class="col-5 row">
                 <button type="button" id="mute" class="btn btn-outline-info fa fa-volume-up col-2"></button>
                 <input type="range" id="volume-bar" class="custom-range col-8" min="0" max="1" step="0.1" value="1">
-                <button type="button" id="full-screen" class="btn btn-outline-info fa fa-window-maximize col-2"></button>
+                <button type="button" id="full-screen"
+                    class="btn btn-outline-info fa fa-window-maximize col-2"></button>
             </div>
-        </div>
+        </div> -->
     </div>
     <footer>
         <h2>LICENSE</h2>
